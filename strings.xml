@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">5-Tac</string>
+    <string name="new_game">Start New Game</string>
+    <string name="ai_prompt">Choose an AI</string>
+    <string name="difficulty_prompt">Choose a Difficulty</string>
+
+    <string-array name="ai_types">
+        <item>MiniMax</item>
+        <item>A*</item>
+    </string-array>
+
+    <string-array name="difficulty">
+        <item>Easy</item>
+        <item>Medium</item>
+        <item>Hard</item>
+    </string-array>
+
+
+</resources>

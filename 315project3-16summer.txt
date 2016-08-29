@@ -1,0 +1,226 @@
+CSCE 315 Project 3 (PRELIMINARY)
+Dr. Daugherity
+Summer 2016
+
+Due: See "Deliverables" section below.
+
+Your team has been assigned to write an Android video game for "5-Toe," a 5 by
+5 tic-tac-toe game.  (Note:  You do not have to have an Android phone, since
+this will be done on an emulator.)  The human user plays against the computer,
+which uses an AI search to choose its moves, either minimax with alpha-beta
+pruning or A*.
+
+The usual rules of tic-tac-toe apply: X (which is the computer) goes first,
+players take turns, and the game ends when one player wins by filling 5
+squares in a row, column, or diagonal, or when all squares are filled (a tie,
+commonly referred to as "the cat got the game").
+
+When the game starts, the user selects the level of difficulty: easy, medium,
+or hard, and which AI to play against, minimax or A*.  Then the computer places
+an X in the center (hard), in a corner (medium), or on an edge but not a corner
+(easy level).  The square selected should be different each time the same
+level is selected; either cycle through the choices or pick a square at
+random.  Each time the user clicks a square, place an O there and check for end
+of game.  If the game is not over, run the chosen AI algorithm, display an X, 
+and check for end of game.
+
+Use XML to specify the GUI in the Android subset of Java. Follow the style guide
+for Java at http://www.oracle.com/technetwork/java/codeconvtoc-136057.html, and
+also follow these three rules:
+1.  No more than one statement per line.
+2.  No function longer than 24 lines (one terminal window).
+3.  No line longer than 80 characters.
+
+For the minimax search with alpha-beta pruning you may need some way of limiting
+the depth to avoid running out of memory or time.  (The computer should move in
+5 seconds or less.)  The utility function X wants to maximize could be something
+like
+
+f = (# of lines with 5 X's - # of lines with 5 O's) * 16^4 +
+(# of lines with 4 X's and a blank - # of lines with 4 O's and a blank) * 16^3 +
+(# of lines with 3 X's and 2 blanks - # of lines with 3 O's and 2 blanks)*16^2 +
+(# of lines with 2 X's and 3 blanks - # of lines with 2 O's and 3 blanks) * 16 +
+(# of lines with 1 X and 4 blanks - # of lines with 1 O and 4 blanks) 
+
+since there are 12 winning lines (rows, columns, and diagonals) and 16 > 12. O's
+utility function would then be -f, so f + (-f) = 0, a zero-sum game.
+
+For A* you need to devise a heuristic function h(n) which comes as close as
+possible to the number of additional moves required to win without exceeding
+the actual number required.  If a win cannot be guaranteed no matter how
+O moves, then h(n) is the estimated number of additional moves to tie, without
+exceeding the actual number of moves required.  If neither a win nor a tie can
+be guaranteed for X, then h(n) is the estimated number of additional moves till
+the game ends with O winning.
+
+Here are some ideas to get you started on A*:
+
+1.  For each move, start A* over by using the current board state as the initial
+A* state.  Generate the successor states (legal X moves) as possible values of
+n and calculate f(n) = g(n) + h(n).  This makes g(n) always 1, since it takes 1
+move to get from the initial state to n.
+
+2.  If there are 4 X's and a blank in 2 rows, columns, or diagonals, and there
+are no lines with 4 O's and a blank, then you can win in 2 more moves 
+guaranteed, namely, O moves and then X wins, so h is 2.
+
+3.  If there are 3 X's and 2 blanks in a row, column, or diagonal, then it
+will take at least 4 more moves.  However, you must also consider how close O is
+to winning and whether blocking O is more urgent.  For example,
+
+ X | X |   |   | X
+-------------------
+   | X |   |   | 
+-------------------
+   |   |   |   | 
+-------------------
+   |   |   |   | 
+-------------------
+ O | O |   | O | O
+
+will end in a tie (assuming both players make the best move), so h would be 17
+(the number of blanks).  Thus you need to consider not only the squares which
+need X's to make 5 in a row, but also the squares which need X's to block O's
+moves; some squares may do both.
+
+3.  If a a node (board state) n would allow O to win in 1 move, then assign
+a "too big" value to h(n), e.g., 25, to insure that A* will not move to state
+n unless X cannot win or tie.
+
+There are numerous 3 by 3 tic-tac-toe Android apps on the Internet, which you 
+can use for ideas if you cite them.  However, if you are going to make your
+million with this game :-), you should not use any code or code ideas from 
+others or you could be liable for copyright infringement and spend all your 
+profits on lawyers and fines :-(.  Note that some of these claim to use AI but 
+really don't!
+
+This is a team project, with three or four students per team.  (Teams of four
+will have an additional task.)  Your assigned team should immediately meet and 
+exchange all contact information and schedule at least one meeting per day.  
+Choose a clever team name (but keep it clean :-)), discuss your strengths in 
+Android, Java, C++, threads, GUI's, XML, learning new IDE's quickly, debugging,
+report writing, etc., and elect a team leader to coordinate the project.  Note: 
+If you were a team leader on Project 2, you cannot also be a team leader for
+Project 3.
+
+Choose one person to have the primary responsibility for each of these
+tasks (although you will need to help the other two on their tasks as well):
+1.  Choose a free Android emulator (Android Studio recommended, but you might
+want to look at MIT's "invention machine") and install it where all team members
+can use it.  Write an XML GUI and the main part of the game in the Android 
+subset of Java and find out how to call a C++ function from it.
+2.  Write a minimax search with alpha-beta pruning in C++ and interface it to
+the main Java program.
+3.  Write an A* search in C++ and interface it to the main Java program.
+4.  (Team of four only)  A clever way to get more time for the AI search is to 
+use the human's "think time" (which doesn't count against the 5-second limit for
+the computer to move) in a separate thread.  In other words, as soon as the 
+computer places an X, the second thread immediately starts searching ahead.  
+Then when the human "finally" enters a move, the 5-second clock starts, the main
+thread tells the second thread to take O's move and only continue searching that
+subtree.  If the search has not completed in 4.5 seconds, tell the second
+thread to stop when the current ply is finished, then make the best move and
+start the second thread over searching ahead.
+
+Follow the Agile methodolgy as described in the slides, including:
+ *   a master burn-down list of remaining tasks and estimated time for each task
+ *   at least 2 "weekly" meetings to assign tasks from the burn-down list
+ *   at least 10 "daily" scrums (15-minute meetings) to report progress and
+      problems and update the burn-down list items and time still needed
+ *   a graph of projected and actual burn-down rate
+
+If the game is complete then consider adding sound (like a meow for a tie), 
+color, motion, blinking screen for "You beat the computer!!!", etc. 
+
+DELIVERABLES 
+
+Create a team project 3 repository on github.tamu.edu and grant access to the
+instructor and the TA in addition to your team members.  Identify all the tasks
+in the project that you can and post that to your repository as the initial
+project task burn-down list, with the estimated number of days for each task.
+Add new items you discover are needed and delete items when they are finished.
+
+Each team must maintain a development log (wiki page in github.tamu.edu titled 
+"Development Log") updated by the team members. This log will be graded. There 
+is no designated format, except that you need to time stamp, write down the 
+name, and write a brief description of the activity, as in Project 2. We will
+check your daily progress.
+
+Major routines should include unit testing.  Demo in the lab may be required.
+
+Design documents: Follow the guidelines in Scott Hackett's "How to Write an 
+Effective Design Document (Writing for a Peer Developer)" at
+http://blog.slickedit.com/2007/05/how-to-write-an-effective-design-document/.
+Include all four sections described in the guide.  Set up your design document 
+(named "Design Document") as a wiki page in github.tamu.edu.  The design 
+document should cover all 3 tasks (4 for a team of 4).
+
+Test session log: This is a human-readable transcript of at least two complete
+games, one using minimax and one using A*, showing the board in graphical form,
+the number of nodes expanded, and the time required (user plus system) to 
+calculate the AI move.  For example,
+
+ Game begins
+ Difficulty: Easy
+ AI algorithm: A*
+
+   |   |   |   | 
+-------------------
+ X |   |   |   | 
+-------------------
+   |   |   |   | 
+-------------------
+   |   |   |   | 
+-------------------
+   |   |   |   | 
+
+   |   |   |   | 
+-------------------
+ X |   |   |   | 
+-------------------
+   |   | O |   | 
+-------------------
+   |   |   |   | 
+-------------------
+   |   |   |   | 
+
+345678 nodes expanded in 4.321 seconds
+ X |   |   |   | 
+-------------------
+ X |   |   |   | 
+-------------------
+   |   | O |   | 
+-------------------
+   |   |   |   | 
+-------------------
+   |   |   |   | 
+
+and so on.
+
+Post production notes: This is a wiki page with changes you had to make to your
+design and why, difficulties, solutions, lessons learned, etc. 
+
+Final printed report should include the three preceding items and a printout 
+of all source code.  Use the "Download ZIP" feature in github and upload the 
+resulting zip file of all source code to CSNET (team leader only).  For the 
+wiki documents we will check the github repository.
+
+The report must include the consensus individual work load distribution 
+(percentage, must add up to 100%). Include this in the "Post production notes".
+Formula for individual score calculation is as follows: individual score = 
+min(sqrt(your percentage*number of team members/100)*team_score,110).  For 
+example, if you are on a team of 4 and your team agrees your contribution was 
+20% and your team score was 85, your individual score is min(sqrt(20/25)*85,110)
+= 76. Note that 25% is the baseline (equal contribution by all four members). If
+your contribution was 30% and your team score was 85, your individual score is 
+min(sqrt(30/25)*85,110) = 93.
+
+DUE DATES
+Design documents - Upload a single PDF to CSNET (team leader only). Due June 24.
+XML GUI runs in Android emulator with a dummy move generator which just picks an
+   open square - Demo June 27.
+Final project code, test session log, and report - Due July 4.
+Class presentation - 1:00-3:00 P.M. July 5 in HRBB 113.  Present the highlights
+of your project including slides, etc.  Note: video clips are safer than trying
+to do a live demo, but you are encouraged to do a live demo if you can do it 
+quickly.
